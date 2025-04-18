@@ -10,4 +10,18 @@
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
+    <string name="createNewAccount">Create new account</string>
+    <string name="registerFullNameHint">Full Name</string>
+    <string name="registerEmailHint">Email</string>
+    <string name="registerPasswordHint">Password</string>
+    <string name="registerRegisterButton">Register</string>
+    <string name="registerAlreadyRegisteredText">Already registered? Login here</string>
+    <string name="loginNewHere">New here? Create account</string>
+    <string name="LoginLoginButton">Login</string>
+    <string name="loginPasswordHint">Password</string>
+    <string name="loginEmailHint">Email</string>
+    <string name="LoginLoginText">Login to your account</string>
+    <string name="shopuzapp">ShopUZapp</string>
+    <string name="homeLogoutButton">Logout</string>
+    <string name="loginResetPassword">Reset password</string>
 </resources>

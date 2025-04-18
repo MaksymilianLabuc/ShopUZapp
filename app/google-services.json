@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "759229592923",
+    "project_id": "shopuzapp",
+    "storage_bucket": "shopuzapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:759229592923:android:b324b6e12a6024061f567e",
+        "android_client_info": {
+          "package_name": "com.example.shopuzapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAdzYjP_A12cg8ORR5FGpfpde4AHAkR0Tw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
