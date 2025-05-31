@@ -22,4 +22,14 @@
         android:name="com.example.shopuzapp.ui.slideshow.SlideshowFragment"
         android:label="@string/menu_slideshow"
         tools:layout="@layout/fragment_slideshow" />
+    <fragment
+        android:id="@+id/nav_listing_detail"
+        android:name="com.example.shopuzapp.ui.ListingDetail.ListingDetailFragment"
+        android:label="Listing detail"
+        tools:layout="@layout/fragment_listing_detail" />
+    <fragment
+        android:id="@+id/nav_cart"
+        android:name="com.example.shopuzapp.ui.Cart.CartFragment"
+        android:label="Cart"
+        tools:layout="@layout/fragment_cart"/>
 </navigation>

@@ -19,11 +19,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.shopuzapp.DB.DatabaseContract;
 import com.example.shopuzapp.DB.DatabaseHelper;
+import com.example.shopuzapp.R;
 import com.example.shopuzapp.databinding.FragmentHomeBinding;
 import com.example.shopuzapp.models.Listing;
 import com.example.shopuzapp.ui.addLIsting.AddListingActivity;
@@ -40,6 +43,7 @@ public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
     private FloatingActionButton addListingFAB;
+    private FloatingActionButton goToCartFAB;
     private ListingsCustomAdapter adapter;
     private RecyclerView listingsRV;
     private ImageView testPictureListing;
@@ -61,6 +65,7 @@ public class HomeFragment extends Fragment {
     }
     public void initWidgets(){
         addListingFAB = binding.AddListingFAB;
+        goToCartFAB = binding.goToCartFAB;
         //testPictureListing = binding.testPictureListing;
         listingsRV = binding.listingsRV;
         addListingFAB.setOnClickListener(new View.OnClickListener() {
@@ -70,6 +75,13 @@ public class HomeFragment extends Fragment {
                 startActivity(sendIntent);
                 Log.d("FAB","fab");
 
+            }
+        });
+        goToCartFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NavController navController = Navigation.findNavController(view);
+                navController.navigate(R.id.nav_cart);
             }
         });
     }

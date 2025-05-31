@@ -24,4 +24,6 @@
     <string name="shopuzapp">ShopUZapp</string>
     <string name="homeLogoutButton">Logout</string>
     <string name="loginResetPassword">Reset password</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
