@@ -14,15 +14,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.shopuzapp.R;
 import com.example.shopuzapp.models.Listing;
-import com.example.shopuzapp.ui.ListingDetail.ListingDetailFragment;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.firebase.auth.FirebaseAuth;
@@ -104,9 +101,9 @@ public class ListingsCustomAdapter extends FirestoreRecyclerAdapter<Listing, Lis
         ImageButton listingItemAddToCartBtn;
         public ListingsViewHolder(@NonNull View itemView) {
             super(itemView);
-            listingItemTitle = itemView.findViewById(R.id.listingItemTitle);
-            listingItemPreviewImage = itemView.findViewById(R.id.listingItemPreviewImage);
-            listingItemAddToCartBtn = itemView.findViewById(R.id.listingItemAddToCartBtn);
+            listingItemTitle = itemView.findViewById(R.id.cartItemTitle);
+            listingItemPreviewImage = itemView.findViewById(R.id.cartItemPreviewImage);
+            listingItemAddToCartBtn = itemView.findViewById(R.id.cartItemAddToCartBtn);
 
         }
     }

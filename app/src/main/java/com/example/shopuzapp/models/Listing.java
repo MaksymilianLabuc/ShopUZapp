@@ -1,9 +1,15 @@
 package com.example.shopuzapp.models;
 
+import com.google.firebase.firestore.Exclude;
+
 public class Listing {
+    @Exclude
+    public String id;
     public String title;
     public String description;
     public String imageBlob;
+    public double price;
+    public String ownerId;
 
 
     public Listing(){}
@@ -11,6 +17,16 @@ public class Listing {
         this.title = title;
         this.description = description;
         this.imageBlob = imageURI;
+    }
+
+    @Exclude
+    public String getId() {
+        return id;
+    }
+
+    @Exclude
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -35,5 +51,21 @@ public class Listing {
 
     public void setImageBlob(String imageBlob) {
         this.imageBlob = imageBlob;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public String getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(String ownerId) {
+        this.ownerId = ownerId;
     }
 }

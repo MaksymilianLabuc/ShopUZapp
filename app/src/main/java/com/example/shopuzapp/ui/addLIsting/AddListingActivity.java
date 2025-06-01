@@ -28,6 +28,7 @@ import com.example.shopuzapp.DB.DatabaseHelper;
 import com.example.shopuzapp.R;
 import com.example.shopuzapp.databinding.ActivityAddListingBinding;
 import com.example.shopuzapp.models.Listing;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.ByteArrayOutputStream;
@@ -47,7 +48,7 @@ public class AddListingActivity extends AppCompatActivity {
     private ActivityResultLauncher<Uri> takePictureLauncher;
     private Uri imageUri;
     private Button addListingButton;
-    private EditText listingTitleET, listingDescriptionET;
+    private EditText listingTitleET, listingDescriptionET, listingPriceET;
     private DatabaseHelper dh;
     private String imageBlob = null;
 
@@ -87,6 +88,7 @@ public class AddListingActivity extends AppCompatActivity {
         addListingButton = binding.addListingButton;
         listingTitleET = binding.listingTitleET;
         listingDescriptionET = binding.listingDescriptionET;
+        listingPriceET = binding.listingPriceET;
 
         addListingButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -189,8 +191,10 @@ public class AddListingActivity extends AppCompatActivity {
     }
 
     private void submitListingToFirestore(){
+        FirebaseAuth auth = FirebaseAuth.getInstance();
         String title = listingTitleET.getText().toString();
         String description = listingDescriptionET.getText().toString();
+        double price = Double.parseDouble(listingPriceET.getText().toString());
 
         if(title.isEmpty() || description.isEmpty()) {
             Toast.makeText(this, "Please fill in title and description", Toast.LENGTH_SHORT).show();
@@ -203,6 +207,8 @@ public class AddListingActivity extends AppCompatActivity {
         Listing newListing = new Listing();
         newListing.setTitle(title);
         newListing.setDescription(description);
+        newListing.setPrice(price);
+        newListing.setOwnerId(auth.getUid());
         if (imageBlob != null) {
 //            newListing.put("imageBlob", imageBlob);
             newListing.setImageBlob(imageBlob);

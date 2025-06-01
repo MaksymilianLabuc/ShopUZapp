@@ -32,4 +32,14 @@
         android:name="com.example.shopuzapp.ui.Cart.CartFragment"
         android:label="Cart"
         tools:layout="@layout/fragment_cart"/>
+    <fragment
+        android:id="@+id/nav_edit_listing"
+        android:name="com.example.shopuzapp.ui.EditListing.EditListingFragment"
+        android:label="Edit listing"
+        tools:layout="@layout/fragment_edit_listing"/>
+    <fragment
+        android:id="@+id/nav_settings"
+        android:name="com.example.shopuzapp.ui.Settings.SettingsFragment"
+        android:label="Settings"
+        tools:layout="@layout/fragment_settings"/>
 </navigation>

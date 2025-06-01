@@ -6,12 +6,15 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavOptions;
+import androidx.navigation.Navigation;
 
 import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,6 +22,8 @@ import com.example.shopuzapp.R;
 import com.example.shopuzapp.databinding.ActivityAddListingBinding;
 import com.example.shopuzapp.databinding.FragmentListingDetailBinding;
 import com.example.shopuzapp.models.Listing;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -33,7 +38,8 @@ public class ListingDetailFragment extends Fragment {
     private ImageView listingDetailImage;
     private TextView listingDetailTitle;
     private TextView listingDetailDescription;
-//    private Listing listing;
+    private Button editListingButton;
+    private Listing currentListing;
 
     public ListingDetailFragment() {
         // Required empty public constructor
@@ -76,10 +82,13 @@ public class ListingDetailFragment extends Fragment {
                 listingRef.get().addOnSuccessListener(documentSnapshot -> {
                     if(documentSnapshot.exists()){
                         Listing listing = documentSnapshot.toObject(Listing.class);
+                        listing.setId(documentSnapshot.getId());
+                        currentListing = listing;
                         if(listing != null){
                             listingDetailTitle.setText(listing.getTitle());
                             listingDetailDescription.setText(listing.getDescription());
                             listingDetailImage.setImageBitmap(decodeBlob(listing.getImageBlob()));
+                            checkIfOwnerAndEnableEdit();
                         }
                     }
                 }).addOnFailureListener(e -> {
@@ -93,7 +102,24 @@ public class ListingDetailFragment extends Fragment {
         listingDetailImage = binding.listingDetailImage;
         listingDetailTitle = binding.listingDetailTitle;
         listingDetailDescription = binding.listingDetailDescription;
+        editListingButton = binding.editListingBtn;
+        editListingButton.setVisibility(View.GONE);
+        editListingButton.setOnClickListener(v -> {
+            Bundle editBundle = new Bundle();
+            editBundle.putString("listingId", currentListing.getId());
+
+
+            Navigation.findNavController(v).navigate(R.id.nav_edit_listing, editBundle);
+
+        });
     }
+    private void checkIfOwnerAndEnableEdit() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null && !currentUser.getUid().isEmpty() && currentUser.getUid().equals(currentListing.getOwnerId())) {
+            editListingButton.setVisibility(View.VISIBLE);
+        }
+    }
+
     private Bitmap decodeBlob(String imageBlob){
         if (imageBlob != null && !imageBlob.isEmpty()) {
             try {
