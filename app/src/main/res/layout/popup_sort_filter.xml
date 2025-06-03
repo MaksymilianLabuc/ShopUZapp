@@ -12,7 +12,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Sort By:"
+        android:text="@string/sortByLabel"
         android:textSize="16sp"
         android:layout_marginBottom="8dp" />
 
@@ -26,7 +26,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Filter by Price:"
+        android:text="@string/sortByLabel"
         android:textSize="16sp"
         android:layout_marginBottom="8dp" />
 
@@ -34,7 +34,7 @@
         android:id="@+id/etMinPrice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Min Price"
+        android:hint="@string/minPriceHint"
         android:inputType="numberDecimal"
         android:layout_marginBottom="8dp" />
 
@@ -42,7 +42,7 @@
         android:id="@+id/etMaxPrice"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Max Price"
+        android:hint="@string/maxPriceHint"
         android:inputType="numberDecimal"
         android:layout_marginBottom="16dp" />
 
@@ -50,6 +50,6 @@
         android:id="@+id/btnApplyFilter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Apply" />
+        android:text="@string/applyFilterButton" />
 
 </LinearLayout>

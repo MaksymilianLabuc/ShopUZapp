@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="sort_options">
-        <item>Default (No Sort)</item>
-        <item>Price: Low to High</item>
-        <item>Price: High to Low</item>
-        <item>Title: A-Z</item>
-        <item>Title: Z-A</item>
+        <item>@string/arrayDefaultSort</item>
+        <item>@string/arrayPriceLowHigh</item>
+        <item>@string/arrayPriceHighLow</item>
+        <item>@string/arrayTitleAZ</item>
+        <item>@string/arrayTitleZA</item>
     </string-array>
 </resources>

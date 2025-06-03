@@ -21,7 +21,7 @@
             android:id="@+id/listingTitleET"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:hint="Title"
+            android:hint="@string/listingTitleHint"
             android:textSize="24sp"
             android:layout_margin="15dp"
             app:layout_constraintTop_toBottomOf="@+id/ListingPhotoImageView"
@@ -30,7 +30,7 @@
             android:id="@+id/listingPriceET"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:hint="Price"
+            android:hint="@string/listingPriceHint"
             android:inputType="number"
             android:textSize="24sp"
             android:layout_margin="15dp"
@@ -40,10 +40,32 @@
             android:id="@+id/listingDescriptionET"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:hint="Descritipon"
+            android:hint="@string/listingDescriptionHint"
             android:textSize="24sp"
             android:layout_margin="15dp"
             app:layout_constraintTop_toBottomOf="@+id/listingPriceET"
+            app:layout_constraintRight_toRightOf="parent"/>
+
+        <ProgressBar
+            android:id="@+id/listingProgressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toTopOf="@+id/main"
+            app:layout_constraintBottom_toBottomOf="@+id/main"
+            app:layout_constraintLeft_toLeftOf="@+id/main"
+            app:layout_constraintRight_toRightOf="@+id/main"
+            />
+        <EditText
+            android:id="@+id/listingLocationET"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="@string/listingLocationHint"
+            android:textSize="24sp"
+            android:layout_margin="15dp"
+            app:layout_constraintTop_toBottomOf="@+id/listingDescriptionET"
             app:layout_constraintRight_toRightOf="parent"/>
 
         <LinearLayout
@@ -51,7 +73,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/listingDescriptionET"
+            app:layout_constraintTop_toBottomOf="@id/listingLocationET"
             android:layout_marginTop="15dp"
             android:orientation="horizontal"
             android:gravity="center_horizontal">
@@ -60,9 +82,10 @@
                 android:id="@+id/addListingButton"
                 android:layout_width="100dp"
                 android:layout_height="50dp"
-                android:text="Save" />
+                android:text="@string/listingSubmitButton" />
 
         </LinearLayout>
+
 
 
 

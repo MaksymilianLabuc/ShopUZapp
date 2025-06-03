@@ -24,6 +24,31 @@
     <string name="shopuzapp">ShopUZapp</string>
     <string name="homeLogoutButton">Logout</string>
     <string name="loginResetPassword">Reset password</string>
+    <string name="listingTitleHint">Title</string>
+    <string name="listingPriceHint">Price</string>
+    <string name="listingDescriptionHint">Description</string>
+    <string name="listingLocationHint">City name</string>
+    <string name="listingSubmitButton">Save</string>
+    <string name="cartIsEmptyMessage">Cart is empty</string>
+    <string name="cartTotalAmmount">Total:</string>
+    <string name="cartCheckoutButton">checkout</string>
+    <string name="listingEditButton">Edit</string>
+    <string name="darkModeLabel">Dark mode</string>
+    <string name="themeSectionLabel">Theme</string>
+    <string name="sortByLabel">Sort by:</string>
+    <string name="filterByLabel">Filter by Price:</string>
+    <string name="minPriceHint">Min Price</string>
+    <string name="maxPriceHint">Max Price</string>
+    <string name="applyFilterButton">Apply</string>
+    <string name="arrayDefaultSort">Default (No Sort)</string>
+    <string name="arrayPriceLowHigh">Price: Low to High</string>
+    <string name="arrayPriceHighLow">Price: High to Low</string>
+    <string name="arrayTitleAZ">Title: A-Z</string>
+    <string name="arrayTitleZA">Title: Z-A</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="language_selection_title">Language selection</string>
+    <string name="language_english">English</string>
+    <string name="language_polish">Polski</string>
 </resources>

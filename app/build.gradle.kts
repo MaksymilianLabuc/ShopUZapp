@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.google.gms.google.services)
+    alias(libs.plugins.kotlin.android)
 }
 
 android {
@@ -15,6 +16,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    }
+    androidResources {
+        generateLocaleConfig = true
     }
 
     buildTypes {
@@ -32,6 +36,9 @@ android {
     }
     buildFeatures {
         viewBinding = true
+    }
+    kotlinOptions {
+        jvmTarget = "11"
     }
 }
 
@@ -51,6 +58,7 @@ dependencies {
     implementation(libs.googleid)
     implementation(libs.firebase.firestore)
     implementation(libs.activity)
+    implementation(libs.core.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
@@ -72,6 +80,8 @@ dependencies {
     implementation("androidx.camera:camera-extensions:${camerax_version}")
 
     implementation(libs.firebase.ui.firestore)
-
+    implementation(libs.android.sdk)
+//    implementation(libs.mapbox.android.plugin.annotation.v9)
+    implementation(libs.android.plugin.annotation.v9)
 
 }

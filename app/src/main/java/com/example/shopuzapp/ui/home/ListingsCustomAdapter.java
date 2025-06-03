@@ -34,6 +34,10 @@ public class ListingsCustomAdapter extends FirestoreRecyclerAdapter<Listing, Lis
     @Override
     protected void onBindViewHolder(@NonNull ListingsViewHolder holder, int position, @NonNull Listing model){
         holder.listingItemTitle.setText(model.getTitle());
+        StringBuilder priceString = new StringBuilder();
+        priceString.append(model.getPrice());
+        priceString.append("PLN");
+        holder.listingItemPrice.setText(priceString.toString());
         String imageBlob = model.getImageBlob();
         if (imageBlob != null && !imageBlob.isEmpty()) {
             try {
@@ -98,12 +102,14 @@ public class ListingsCustomAdapter extends FirestoreRecyclerAdapter<Listing, Lis
     static class ListingsViewHolder extends RecyclerView.ViewHolder {
         ImageView listingItemPreviewImage;
         TextView listingItemTitle;
+        TextView listingItemPrice;
         ImageButton listingItemAddToCartBtn;
         public ListingsViewHolder(@NonNull View itemView) {
             super(itemView);
             listingItemTitle = itemView.findViewById(R.id.cartItemTitle);
             listingItemPreviewImage = itemView.findViewById(R.id.cartItemPreviewImage);
             listingItemAddToCartBtn = itemView.findViewById(R.id.cartItemAddToCartBtn);
+            listingItemPrice = itemView.findViewById(R.id.listingItemPrice);
 
         }
     }

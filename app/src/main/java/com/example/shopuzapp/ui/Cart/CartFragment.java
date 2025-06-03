@@ -135,7 +135,7 @@ public class CartFragment extends Fragment {
             // User not logged in, show empty cart message or prompt login
 //            progressBar.setVisibility(View.GONE);
             emptyCartMessage.setVisibility(View.VISIBLE);
-            emptyCartMessage.setText("Please log in to view your cart.");
+            emptyCartMessage.setText(getString(R.string.cartIsEmptyMessage));
 //            cartAdapter.setCartListings(new ArrayList<>()); // Clear any existing items
         }
 
@@ -180,8 +180,11 @@ public class CartFragment extends Fragment {
                         Log.d("CartFragment", "Cart is empty.");
 //                        progressBar.setVisibility(View.GONE);
                         emptyCartMessage.setVisibility(View.VISIBLE);
-                        emptyCartMessage.setText("Your cart is empty.");
+                        emptyCartMessage.setText(getString(R.string.cartIsEmptyMessage));
                         adapter.setCartItems(new ArrayList<>()); // Clear adapter
+                        totalAmmountValue = 0.0; // Reset total amount
+                        cartTotalAmmount.setText(String.valueOf(totalAmmountValue)); // Update UI
+                        cartCheckoutBtn.setEnabled(false); // Disable checkout button
                         return;
                     }
 
@@ -204,7 +207,7 @@ public class CartFragment extends Fragment {
             adapter.setCartItems(new ArrayList<>());
 //            progressBar.setVisibility(View.GONE);
             emptyCartMessage.setVisibility(View.VISIBLE);
-            emptyCartMessage.setText("Your cart is empty.");
+            emptyCartMessage.setText(getString(R.string.cartIsEmptyMessage));
             return;
         }
 
@@ -344,9 +347,19 @@ public class CartFragment extends Fragment {
 
                     Log.d("value",String.valueOf(totalAmmountValue));
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                        doc.getReference().delete();
+                        String listingId = doc.getId(); // Get the listing ID from the cart document
+                        // 1. Delete from user's cart
+                        doc.getReference().delete()
+                                .addOnSuccessListener(aVoid -> Log.d("Cart", "Item " + listingId + " removed from cart."))
+                                .addOnFailureListener(e -> Log.e("Cart", "Error removing item " + listingId + " from cart: " + e.getMessage()));
+
+                        // 2. Delete from 'listings' collection
+                        db.collection("listings").document(listingId)
+                                .delete()
+                                .addOnSuccessListener(aVoid -> Log.d("Listings", "Listing " + listingId + " removed from listings collection."))
+                                .addOnFailureListener(e -> Log.e("Listings", "Error removing listing " + listingId + " from listings collection: " + e.getMessage()));
                     }
-                    Log.d("Cart", "User cart cleared.");
+                    Log.d("Cart", "User cart cleared and corresponding listings deleted.");
                     showOrderConfirmationNotification(tmpTotal);
                 })
                 .addOnFailureListener(e -> {

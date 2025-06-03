@@ -21,6 +21,18 @@
         android:layout_marginTop="50dp"
         app:layout_constraintLeft_toRightOf="@id/cartItemPreviewImage"
         app:layout_constraintTop_toTopOf="parent"/>
+    <TextView
+        android:id="@+id/listingItemPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sample text"
+        android:textSize="17sp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="50dp"
+        app:layout_constraintLeft_toRightOf="@id/cartItemPreviewImage"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
     <ImageButton
         android:id="@+id/cartItemAddToCartBtn"
         android:layout_width="wrap_content"

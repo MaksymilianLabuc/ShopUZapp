@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,6 +26,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.shopuzapp.DB.DatabaseContract;
 import com.example.shopuzapp.DB.DatabaseHelper;
+import com.example.shopuzapp.Geocoding.GeocodingHelper;
 import com.example.shopuzapp.R;
 import com.example.shopuzapp.databinding.ActivityAddListingBinding;
 import com.example.shopuzapp.models.Listing;
@@ -48,9 +50,11 @@ public class AddListingActivity extends AppCompatActivity {
     private ActivityResultLauncher<Uri> takePictureLauncher;
     private Uri imageUri;
     private Button addListingButton;
-    private EditText listingTitleET, listingDescriptionET, listingPriceET;
+    private EditText listingTitleET, listingDescriptionET, listingPriceET, listingLocationET;
     private DatabaseHelper dh;
     private String imageBlob = null;
+    private ProgressBar listingProgressBar;
+    private Map<String,String> location;
 
 
     @Override
@@ -89,16 +93,16 @@ public class AddListingActivity extends AppCompatActivity {
         listingTitleET = binding.listingTitleET;
         listingDescriptionET = binding.listingDescriptionET;
         listingPriceET = binding.listingPriceET;
+        listingProgressBar = binding.listingProgressBar;
+        listingLocationET = binding.listingLocationET;
 
         addListingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Listing newListing = new Listing(listingTitleET.getText().toString(),
-                        listingDescriptionET.getText().toString(),
-                        imageUri.toString());
-                dh.addListing(newListing);
+
+                validateListing();
 //                submitListing();
-                submitListingToFirestore();
+//                submitListingToFirestore();
                 finish();
             }
         });
@@ -190,6 +194,34 @@ public class AddListingActivity extends AppCompatActivity {
         }
     }
 
+    private void validateListing(){
+        listingProgressBar.setVisibility(View.VISIBLE);
+        GeocodingHelper.geocode(listingLocationET.getText().toString(), new GeocodingHelper.GeocodingCallback() {
+            @Override
+            public void onResult(Map<String, String> result) {
+                runOnUiThread(() -> {
+                    listingProgressBar.setVisibility(View.GONE);
+                    addListingButton.setEnabled(true);
+                    listingLocationET.setEnabled(true);
+
+                    if (result != null) {
+                        location = result; // Store the geocoded location
+                    } else {
+                        Toast.makeText(AddListingActivity.this, "No location found for: " + listingLocationET.getText().toString(), Toast.LENGTH_LONG).show();
+                        location = null;
+                    }
+                    submitListingToFirestore();
+                });
+
+            }
+
+            @Override
+            public void onError(String message) {
+//                listingProgressBar.setVisibility(View.GONE);
+                Log.d("geo","blad geocoding: "+message);
+            }
+        });
+    }
     private void submitListingToFirestore(){
         FirebaseAuth auth = FirebaseAuth.getInstance();
         String title = listingTitleET.getText().toString();
@@ -209,6 +241,7 @@ public class AddListingActivity extends AppCompatActivity {
         newListing.setDescription(description);
         newListing.setPrice(price);
         newListing.setOwnerId(auth.getUid());
+        newListing.setLocation(location);
         if (imageBlob != null) {
 //            newListing.put("imageBlob", imageBlob);
             newListing.setImageBlob(imageBlob);
@@ -219,6 +252,7 @@ public class AddListingActivity extends AppCompatActivity {
                 .add(newListing)
                 .addOnSuccessListener(documentReference -> {
                     Toast.makeText(this, "Zapisano w Firestore", Toast.LENGTH_SHORT).show();
+                    Log.e("Firestore", "zapisano w firestore");
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Nie udało się zapisać w Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show();

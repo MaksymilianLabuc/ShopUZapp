@@ -1,0 +1,54 @@
+<resources>
+    <string name="app_name">ShopUZapp</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Strona główna</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="createNewAccount">Utwórz nowe konto</string>
+    <string name="registerFullNameHint">Pełne imie</string>
+    <string name="registerEmailHint">Email</string>
+    <string name="registerPasswordHint">Hasło</string>
+    <string name="registerRegisterButton">Rejestracja</string>
+    <string name="registerAlreadyRegisteredText">Masz już konto? Zaloguj się</string>
+    <string name="loginNewHere">Nie masz konta? Utwórz konto</string>
+    <string name="LoginLoginButton">Zaloguj</string>
+    <string name="loginPasswordHint">Hasło</string>
+    <string name="loginEmailHint">Email</string>
+    <string name="LoginLoginText">Zaloguj się</string>
+    <string name="shopuzapp">ShopUZapp</string>
+    <string name="homeLogoutButton">Wyloguj</string>
+    <string name="loginResetPassword">Resetuj hasło</string>
+    <string name="listingTitleHint">Tytuł</string>
+    <string name="listingPriceHint">Cena</string>
+    <string name="listingDescriptionHint">Opis</string>
+    <string name="listingLocationHint">Miasto</string>
+    <string name="listingSubmitButton">Zapisz</string>
+    <string name="cartIsEmptyMessage">Koszyk jest pusty</string>
+    <string name="cartTotalAmmount">Suma:</string>
+    <string name="cartCheckoutButton">Kup</string>
+    <string name="listingEditButton">Edytuj</string>
+    <string name="darkModeLabel">Ciemny motyw</string>
+    <string name="themeSectionLabel">Motyw</string>
+    <string name="sortByLabel">Sortuj po:</string>
+    <string name="filterByLabel">Filtruj po cenie:</string>
+    <string name="minPriceHint">Min cena</string>
+    <string name="maxPriceHint">Max cena</string>
+    <string name="applyFilterButton">Zastosuj</string>
+    <string name="arrayDefaultSort">Domyślne (Nieposortowane)</string>
+    <string name="arrayPriceLowHigh">Cena: od najniższej</string>
+    <string name="arrayPriceHighLow">Cena: do największej</string>
+    <string name="arrayTitleAZ">Tytuł: A-Z</string>
+    <string name="arrayTitleZA">Tytuł: Z-A</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="language_selection_title">Language selection</string>
+    <string name="language_english">English</string>
+    <string name="language_polish">Polski</string>
+</resources>

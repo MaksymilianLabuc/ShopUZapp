@@ -2,9 +2,12 @@ package com.example.shopuzapp.ui.ListingDetail;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
@@ -27,12 +30,24 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.maplibre.android.MapLibre;
+import org.maplibre.android.camera.CameraPosition;
+import org.maplibre.android.camera.CameraUpdateFactory;
+import org.maplibre.android.geometry.LatLng;
+import org.maplibre.android.maps.MapView;
+import org.maplibre.android.maps.UiSettings;
+import org.maplibre.android.plugins.annotation.SymbolManager;
+import org.maplibre.android.plugins.annotation.SymbolOptions;
+import org.maplibre.android.utils.BitmapUtils;
+import org.maplibre.android.utils.ColorUtils;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link ListingDetailFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class ListingDetailFragment extends Fragment {
+    private static final String ICON_ID = "custom-marker-icon";
 
     private FragmentListingDetailBinding binding;
     private ImageView listingDetailImage;
@@ -40,20 +55,12 @@ public class ListingDetailFragment extends Fragment {
     private TextView listingDetailDescription;
     private Button editListingButton;
     private Listing currentListing;
+    private MapView listingDetailMapView;
+    private MapController mapController;
 
     public ListingDetailFragment() {
         // Required empty public constructor
     }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ListingDetailFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static ListingDetailFragment newInstance(String param1, String param2) {
         ListingDetailFragment fragment = new ListingDetailFragment();
         Bundle args = new Bundle();
@@ -103,6 +110,53 @@ public class ListingDetailFragment extends Fragment {
         listingDetailTitle = binding.listingDetailTitle;
         listingDetailDescription = binding.listingDetailDescription;
         editListingButton = binding.editListingBtn;
+        listingDetailMapView = binding.listingDetailMapView;
+//        mapController = new MapController(this.getContext(), listingDetailMapView);
+//        mapController.setupMap(51.93, 15.50);
+        listingDetailMapView.getMapAsync(mapLibreMap -> mapLibreMap.setStyle("https://tiles.openfreemap.org/styles/bright", style -> {
+            LatLng location;
+            if(currentListing.getLocation() != null) location = new LatLng(Double.parseDouble(currentListing.location.get("lat")),Double.parseDouble(currentListing.location.get("lng")));
+//            else location = new LatLng(0,0);
+            else {
+                location = new LatLng(0,0);
+                listingDetailMapView.setVisibility(View.GONE);
+//                return;
+            }
+            UiSettings uiSettings = mapLibreMap.getUiSettings();
+            uiSettings.setScrollGesturesEnabled(false);
+            uiSettings.setZoomGesturesEnabled(false);
+            uiSettings.setRotateGesturesEnabled(false);
+            uiSettings.setTiltGesturesEnabled(false);
+            uiSettings.setDoubleTapGesturesEnabled(false);
+            uiSettings.setQuickZoomGesturesEnabled(false);
+
+            try {
+                Drawable drawable = ContextCompat.getDrawable(this.getContext(),R.drawable.red_marker);
+                if (drawable != null) {
+                    style.addImage(ICON_ID, BitmapUtils.getBitmapFromDrawable(drawable));
+                } else {
+                    Log.e("MapController", "Drawable for custom icon is null.");
+                }
+            } catch (Exception e) {
+                Log.e("MapController", "Error adding image to style: " + e.getMessage());
+            }
+            CameraPosition cameraPosition = new CameraPosition.Builder().target(location).zoom(8).build();
+            mapLibreMap.setCameraPosition(cameraPosition);
+
+            SymbolManager symbolManager = new SymbolManager(listingDetailMapView, mapLibreMap, style);
+            symbolManager.setIconAllowOverlap(true);
+            symbolManager.setTextAllowOverlap(true);
+            symbolManager.setIconIgnorePlacement(true);
+            symbolManager.setTextIgnorePlacement(true);
+
+            SymbolOptions symbolOptions = new SymbolOptions().withLatLng(location)
+                    .withIconImage(ICON_ID)
+                    .withIconSize(0.5f)
+                    .withIconAnchor("bottom")
+//                    .withSymbolSortKey(5.0f)
+                    .withDraggable(false);
+            symbolManager.create(symbolOptions);
+        }));
         editListingButton.setVisibility(View.GONE);
         editListingButton.setOnClickListener(v -> {
             Bundle editBundle = new Bundle();
@@ -112,6 +166,7 @@ public class ListingDetailFragment extends Fragment {
             Navigation.findNavController(v).navigate(R.id.nav_edit_listing, editBundle);
 
         });
+
     }
     private void checkIfOwnerAndEnableEdit() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();

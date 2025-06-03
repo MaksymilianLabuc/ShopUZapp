@@ -2,20 +2,25 @@ package com.example.shopuzapp.ui.Settings;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
+import android.widget.RadioGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.core.os.LocaleListCompat;
 import androidx.fragment.app.Fragment;
 
 import com.example.shopuzapp.R;
 import com.example.shopuzapp.databinding.FragmentSettingsBinding;
 import com.google.android.material.switchmaterial.SwitchMaterial;
+
+import java.util.Locale;
 
 public class SettingsFragment extends Fragment {
 
@@ -23,6 +28,7 @@ public class SettingsFragment extends Fragment {
     private SharedPreferences sharedPreferences;
     private static final String PREFS_NAME = "app_settings";
     private static final String THEME_KEY = "dark_mode";
+
 
     public SettingsFragment() {
         // Required empty public constructor
@@ -68,7 +74,14 @@ public class SettingsFragment extends Fragment {
         boolean isDarkMode = sharedPreferences.getBoolean(THEME_KEY, false);
         binding.themeSwitch.setChecked(isDarkMode);
         setAppTheme(isDarkMode);
+
+
+        // Load the saved language state to correctly set the radio button
+        // No need to call setAppLanguage here again, as attachBaseContext handles it on activity creation.
+
+
     }
+
 
     @Override
     public void onDestroyView() {

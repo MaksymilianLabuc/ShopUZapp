@@ -2,6 +2,8 @@ package com.example.shopuzapp.models;
 
 import com.google.firebase.firestore.Exclude;
 
+import java.util.Map;
+
 public class Listing {
     @Exclude
     public String id;
@@ -10,6 +12,7 @@ public class Listing {
     public String imageBlob;
     public double price;
     public String ownerId;
+    public Map<String, String> location;
 
 
     public Listing(){}
@@ -67,5 +70,13 @@ public class Listing {
 
     public void setOwnerId(String ownerId) {
         this.ownerId = ownerId;
+    }
+
+    public Map<String, String> getLocation() {
+        return location;
+    }
+
+    public void setLocation(Map<String, String> location) {
+        this.location = location;
     }
 }
