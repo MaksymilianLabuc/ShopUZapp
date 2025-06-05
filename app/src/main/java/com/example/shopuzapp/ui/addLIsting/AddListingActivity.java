@@ -44,25 +44,52 @@ import java.util.Locale;
 import java.util.Map;
 
 
+/**
+ * Klasa AddListingActivity obsługuje dodawanie nowych ofert do aplikacji ShopUzApp.
+ */
 public class AddListingActivity extends AppCompatActivity {
+
+    /** Powiązanie z plikiem XML układu. */
     private ActivityAddListingBinding binding;
+
+    /** Obraz oferty. */
     private ImageView LisingPictureImageView;
+
+    /** Launcher do wykonania zdjęcia. */
     private ActivityResultLauncher<Uri> takePictureLauncher;
+
+    /** Adres URI przechowywanej fotografii. */
     private Uri imageUri;
+
+    /** Przycisk do dodania nowej oferty. */
     private Button addListingButton;
+
+    /** Pola tekstowe do wprowadzenia informacji o ofercie. */
     private EditText listingTitleET, listingDescriptionET, listingPriceET, listingLocationET;
+
+    /** Pomocnicza klasa do obsługi bazy danych. */
     private DatabaseHelper dh;
+
+    /** Obraz w formacie Blob. */
     private String imageBlob = null;
+
+    /** Pasek postępu przy dodawaniu oferty. */
     private ProgressBar listingProgressBar;
+
+    /** Lokalizacja oferty. */
     private Map<String,String> location;
 
-
+    /**
+     * Inicjalizacja aktywności.
+     * @param savedInstanceState Stan zapisany w przypadku ponownego uruchomienia.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         binding = ActivityAddListingBinding.inflate(getLayoutInflater());
         dh = new DatabaseHelper(this);
+
         takePictureLauncher = registerForActivityResult(new ActivityResultContracts.TakePicture(), success -> {
             if (success) {
                 if (imageUri != null) {
@@ -75,18 +102,16 @@ public class AddListingActivity extends AppCompatActivity {
                         imageBlob = null;
                     }
                 }
-            } else {
-                // Image capture failed.
             }
         });
+
         initWidgets();
         setContentView(binding.getRoot());
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
     }
+
+    /**
+     * Inicjalizacja widżetów i obsługa zdarzeń.
+     */
     private void initWidgets(){
         LisingPictureImageView = binding.ListingPhotoImageView;
         addListingButton = binding.addListingButton;
@@ -96,69 +121,61 @@ public class AddListingActivity extends AppCompatActivity {
         listingProgressBar = binding.listingProgressBar;
         listingLocationET = binding.listingLocationET;
 
-        addListingButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                validateListing();
-//                submitListing();
-//                submitListingToFirestore();
-                finish();
-            }
+        addListingButton.setOnClickListener(view -> {
+            validateListing();
+            finish();
         });
-        LisingPictureImageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                try {
-                    imageUri = createImageUri();
-                } catch (IOException e){
-                    Log.d("image",e.getMessage());
-                }
-                if (imageUri != null) {
-                    takePictureLauncher.launch(imageUri);
-                }
 
+        LisingPictureImageView.setOnClickListener(view -> {
+            try {
+                imageUri = createImageUri();
+            } catch (IOException e){
+                Log.d("image", e.getMessage());
+            }
+            if (imageUri != null) {
+                takePictureLauncher.launch(imageUri);
             }
         });
     }
-//    private Uri createImageUri() {
-//        String filename = "IMG_" + new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date()) + ".jpg";
-//        ContentValues values = new ContentValues();
-//        values.put(MediaStore.Images.Media.DISPLAY_NAME, filename);
-//        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-//        return getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-//    }
+
+    /**
+     * Tworzy URI do nowego obrazu.
+     * @return URI nowego obrazu.
+     * @throws IOException W przypadku błędu operacji plików.
+     */
     private Uri createImageUri() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getFilesDir(); // Get app-specific storage directory
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
+        File storageDir = getFilesDir();
+        File image = File.createTempFile(imageFileName, ".jpg", storageDir);
 
-        // Use FileProvider to get a content URI
         return FileProvider.getUriForFile(this, "com.example.shopuzapp.fileprovider", image);
     }
+
+    /**
+     * Dodaje ofertę do bazy Firestore.
+     */
     private void submitListing(){
         Listing l = new Listing();
         l.setTitle(listingTitleET.getText().toString());
         l.setDescription(listingDescriptionET.getText().toString());
+
         if(l.getTitle().isEmpty() || l.getDescription().isEmpty()) return;
-        Map<String,String> newListing = new HashMap<String,String>();
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("listings")
                 .add(l)
-                .addOnSuccessListener(documentReference -> {
-                    Toast.makeText(this, "Zapisano w firestore", Toast.LENGTH_SHORT).show();
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Nie udalo sie zapisac w firestore", Toast.LENGTH_SHORT).show();
-                });
-
+                .addOnSuccessListener(documentReference ->
+                        Toast.makeText(this, "Zapisano w Firestore", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Nie udało się zapisać w Firestore", Toast.LENGTH_SHORT).show());
     }
+
+    /**
+     * Zmniejsza rozmiar obrazu i konwertuje go do formatu Blob.
+     * @param uri URI obrazu do konwersji.
+     * @throws IOException W przypadku błędu operacji plików.
+     */
     private void downscaleAndConvertToBlob(Uri uri) throws IOException {
         InputStream inputStream = getContentResolver().openInputStream(uri);
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -184,7 +201,7 @@ public class AddListingActivity extends AppCompatActivity {
 
         if (scaledBitmap != null) {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 80, byteArrayOutputStream); // Adjust quality if needed
+            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 80, byteArrayOutputStream);
             byte[] byteArray = byteArrayOutputStream.toByteArray();
             imageBlob = Base64.encodeToString(byteArray, Base64.DEFAULT);
         } else {
@@ -194,6 +211,9 @@ public class AddListingActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Waliduje ofertę i wykonuje geokodowanie lokalizacji.
+     */
     private void validateListing(){
         listingProgressBar.setVisibility(View.VISIBLE);
         GeocodingHelper.geocode(listingLocationET.getText().toString(), new GeocodingHelper.GeocodingCallback() {
@@ -204,59 +224,47 @@ public class AddListingActivity extends AppCompatActivity {
                     addListingButton.setEnabled(true);
                     listingLocationET.setEnabled(true);
 
-                    if (result != null) {
-                        location = result; // Store the geocoded location
-                    } else {
-                        Toast.makeText(AddListingActivity.this, "No location found for: " + listingLocationET.getText().toString(), Toast.LENGTH_LONG).show();
-                        location = null;
+                    location = (result != null) ? result : null;
+
+                    if (result == null) {
+                        Toast.makeText(AddListingActivity.this,
+                                "No location found for: " + listingLocationET.getText().toString(),
+                                Toast.LENGTH_LONG).show();
                     }
+
                     submitListingToFirestore();
                 });
-
             }
 
             @Override
             public void onError(String message) {
-//                listingProgressBar.setVisibility(View.GONE);
-                Log.d("geo","blad geocoding: "+message);
+                Log.d("geo", "Błąd geokodowania: " + message);
             }
         });
     }
+
+    /**
+     * Przesyła ofertę do Firestore.
+     */
     private void submitListingToFirestore(){
         FirebaseAuth auth = FirebaseAuth.getInstance();
-        String title = listingTitleET.getText().toString();
-        String description = listingDescriptionET.getText().toString();
-        double price = Double.parseDouble(listingPriceET.getText().toString());
-
-        if(title.isEmpty() || description.isEmpty()) {
-            Toast.makeText(this, "Please fill in title and description", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-//        Map<String, Object> newListing = new HashMap<>();
-//        newListing.put("title", title);
-//        newListing.put("description", description);
         Listing newListing = new Listing();
-        newListing.setTitle(title);
-        newListing.setDescription(description);
-        newListing.setPrice(price);
+        newListing.setTitle(listingTitleET.getText().toString());
+        newListing.setDescription(listingDescriptionET.getText().toString());
+        newListing.setPrice(Double.parseDouble(listingPriceET.getText().toString()));
         newListing.setOwnerId(auth.getUid());
         newListing.setLocation(location);
+
         if (imageBlob != null) {
-//            newListing.put("imageBlob", imageBlob);
             newListing.setImageBlob(imageBlob);
         }
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("listings")
                 .add(newListing)
-                .addOnSuccessListener(documentReference -> {
-                    Toast.makeText(this, "Zapisano w Firestore", Toast.LENGTH_SHORT).show();
-                    Log.e("Firestore", "zapisano w firestore");
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Nie udało się zapisać w Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    Log.e("Firestore", "Error adding document", e);
-                });
+                .addOnSuccessListener(documentReference ->
+                        Toast.makeText(this, "Zapisano w Firestore", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "Nie udało się zapisać w Firestore", Toast.LENGTH_SHORT).show());
     }
 }
