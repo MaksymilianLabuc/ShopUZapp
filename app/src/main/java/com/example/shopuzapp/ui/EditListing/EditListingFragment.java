@@ -1,6 +1,3 @@
-/**
- * Pakiet zawierający fragment do edycji oferty w aplikacji ShopUzApp.
- */
 package com.example.shopuzapp.ui.EditListing;
 
 import android.graphics.Bitmap;
@@ -26,56 +23,25 @@ import com.example.shopuzapp.models.Listing;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-/**
- * Fragment umożliwiający edycję istniejącej oferty w aplikacji ShopUzApp.
- */
 public class EditListingFragment extends Fragment {
 
-    /** Obrazek oferty. */
     private ImageView editListingPhotoImageView;
-
-    /** Pole tekstowe do wpisania tytułu oferty. */
     private EditText editListingTitleET;
-
-    /** Pole tekstowe do wpisania ceny oferty. */
     private EditText editListingPriceET;
-
-    /** Pole tekstowe do wpisania opisu oferty. */
     private EditText editListingDescriptionET;
-
-    /** Przycisk do zapisania zmian w ofercie. */
     private Button editSaveListingButton;
-
-    /** Identyfikator oferty. */
     private String listingId;
-
-    /** Instancja bazy danych Firebase Firestore. */
     private FirebaseFirestore db;
-
-    /** Kontroler nawigacji. */
     private NavController navController;
 
-    /**
-     * Konstruktor domyślny wymagany przez system.
-     */
     public EditListingFragment() {
-        // Wymagany pusty konstruktor publiczny
+        // Required empty public constructor
     }
 
-    /**
-     * Tworzy nową instancję fragmentu edycji oferty.
-     *
-     * @return Nowa instancja EditListingFragment.
-     */
     public static EditListingFragment newInstance() {
         return new EditListingFragment();
     }
-    /**
-     * Wywoływane podczas tworzenia fragmentu.
-     * Pobiera identyfikator oferty przekazany w argumentach.
-     *
-     * @param savedInstanceState Stan zapisany w przypadku ponownego uruchomienia.
-     */
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,17 +51,10 @@ public class EditListingFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
     }
 
-    /**
-     * Tworzy i zwraca widok fragmentu.
-     *
-     * @param inflater  Obiekt inflatera układu.
-     * @param container Kontener dla fragmentu.
-     * @param savedInstanceState Stan zapisany.
-     * @return Widok fragmentu edycji oferty.
-     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_edit_listing, container, false);
         initViews(view);
         navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_content_main);
@@ -104,6 +63,7 @@ public class EditListingFragment extends Fragment {
             loadListingDetails(listingId);
         } else {
             Toast.makeText(getContext(), "Error: Listing ID not found.", Toast.LENGTH_SHORT).show();
+            // Optionally navigate back or disable editing
         }
 
         editSaveListingButton.setOnClickListener(v -> saveEditedListing());
@@ -111,11 +71,6 @@ public class EditListingFragment extends Fragment {
         return view;
     }
 
-    /**
-     * Inicjalizuje widżety interfejsu użytkownika.
-     *
-     * @param view Widok fragmentu.
-     */
     private void initViews(View view) {
         editListingPhotoImageView = view.findViewById(R.id.editListingPhotoImageView);
         editListingTitleET = view.findViewById(R.id.editListingTitleET);
@@ -124,11 +79,6 @@ public class EditListingFragment extends Fragment {
         editSaveListingButton = view.findViewById(R.id.editSaveListingButton);
     }
 
-    /**
-     * Pobiera szczegóły oferty na podstawie jej identyfikatora i wypełnia formularz edycji.
-     *
-     * @param listingId Identyfikator oferty.
-     */
     private void loadListingDetails(String listingId) {
         DocumentReference listingRef = db.collection("listings").document(listingId);
         listingRef.get().addOnSuccessListener(documentSnapshot -> {
@@ -142,23 +92,19 @@ public class EditListingFragment extends Fragment {
                     if (image != null) {
                         editListingPhotoImageView.setImageBitmap(image);
                     } else {
-                        editListingPhotoImageView.setImageResource(R.drawable.ic_launcher_foreground);
+                        editListingPhotoImageView.setImageResource(R.drawable.ic_launcher_foreground); // Or a default image
                     }
                 }
             } else {
                 Toast.makeText(getContext(), "Listing not found.", Toast.LENGTH_SHORT).show();
+                // Optionally navigate back
             }
         }).addOnFailureListener(e -> {
             Log.e("EditListingFragment", "Error fetching listing: ", e);
             Toast.makeText(getContext(), "Failed to load listing details.", Toast.LENGTH_SHORT).show();
         });
     }
-    /**
-     * Dekoduje obraz zapisany jako blob w bazie danych Firebase Firestore.
-     *
-     * @param imageBlob Dane obrazu zakodowane w formacie Base64.
-     * @return Bitmapa obrazu lub null, jeśli wystąpił błąd.
-     */
+
     private Bitmap decodeBlob(String imageBlob) {
         if (imageBlob != null && !imageBlob.isEmpty()) {
             try {
@@ -171,9 +117,6 @@ public class EditListingFragment extends Fragment {
         return null;
     }
 
-    /**
-     * Zapisuje edytowane dane oferty w bazie danych Firebase Firestore.
-     */
     private void saveEditedListing() {
         if (listingId == null) {
             Toast.makeText(getContext(), "Error: Listing ID is missing.", Toast.LENGTH_SHORT).show();
@@ -184,7 +127,6 @@ public class EditListingFragment extends Fragment {
         String description = editListingDescriptionET.getText().toString().trim();
         String priceStr = editListingPriceET.getText().toString().trim();
 
-        // Walidacja pól wejściowych
         if (title.isEmpty() || description.isEmpty() || priceStr.isEmpty()) {
             Toast.makeText(getContext(), "Please fill in all fields.", Toast.LENGTH_SHORT).show();
             return;
@@ -198,7 +140,10 @@ public class EditListingFragment extends Fragment {
             return;
         }
 
-        // Aktualizacja oferty w Firestore
+        // For now, we are not handling image updates in this simplified edit.
+        // If you need to update the image, you'll need to add image selection
+        // functionality and handle the new image blob here.
+
         DocumentReference listingRef = db.collection("listings").document(listingId);
         listingRef.update(
                 "title", title,
@@ -206,11 +151,12 @@ public class EditListingFragment extends Fragment {
                 "price", price
         ).addOnSuccessListener(aVoid -> {
             Toast.makeText(getContext(), "Listing updated successfully.", Toast.LENGTH_SHORT).show();
+            // Optionally navigate back to the detail view
             if (navController != null) {
                 Bundle bundle = new Bundle();
                 bundle.putString("listingId", listingId);
                 NavOptions navOptions = new NavOptions.Builder()
-                        .setPopUpTo(R.id.nav_home, true)
+                        .setPopUpTo(R.id.nav_home, true) // Pop up to the homeFragment (inclusive)
                         .build();
                 navController.navigate(R.id.nav_listing_detail, bundle, navOptions);
             }

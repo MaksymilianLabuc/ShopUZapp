@@ -47,47 +47,20 @@ import java.util.List;
 import java.util.Locale;
 
 
-/**
- * Klasa CartFragment obsługuje koszyk zakupowy w aplikacji ShopUzApp.
- */
 public class CartFragment extends Fragment {
-    /** Powiązanie z plikiem XML układu. */
     private FragmentCartBinding binding;
-
-    /** RecyclerView dla elementów koszyka. */
     private RecyclerView cartItemsRV;
-
-    /** Instancja bazy danych Firebase. */
     private FirebaseFirestore db;
-
-    /** Instancja uwierzytelniania Firebase. */
     private FirebaseAuth auth;
-
-    /** Adapter dla elementów koszyka. */
     private CartItemsCustomAdapter adapter;
-
-    /** Listener dla zmian w koszyku. */
     private ListenerRegistration cartItemsListener;
-
-    /** Komunikat o pustym koszyku. */
     private TextView emptyCartMessage;
-
-    /** Całkowita kwota koszyka. */
     private TextView cartTotalAmmount;
-
-    /** Przycisk realizacji zamówienia. */
     private Button cartCheckoutBtn;
-
-    /** Całkowita wartość kwoty koszyka. */
     private double totalAmmountValue;
-
-    /** Lista rejestracji nasłuchu zmian ofert. */
     private List<ListenerRegistration> listingListeners = new ArrayList<>();
-
-    /** Identyfikator powiadomień. */
     private static final int NOTIFICATION_ID = 100;
 
-    /** Launcher do tworzenia dokumentu PDF. */
     private ActivityResultLauncher<String> createPdfDocumentLauncher =
             registerForActivityResult(new ActivityResultContracts.CreateDocument("application/pdf"),
                     uri -> {
@@ -98,44 +71,30 @@ public class CartFragment extends Fragment {
                         }
                     });
 
-    /**
-     * Konstruktor domyślny wymagany przez system.
-     */
+
+
     public CartFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Tworzy nową instancję fragmentu koszyka.
-     * @return Nowa instancja CartFragment.
-     */
-    public static CartFragment newInstance() {
+
+    public static CartFragment newInstance(String param1, String param2) {
         CartFragment fragment = new CartFragment();
         Bundle args = new Bundle();
         fragment.setArguments(args);
         return fragment;
     }
 
-    /**
-     * Wywoływane podczas tworzenia fragmentu.
-     * @param savedInstanceState Stan zapisany w przypadku ponownego uruchomienia.
-     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
-    /**
-     * Tworzy i zwraca widok fragmentu.
-     * @param inflater Obiekt inflatera układu.
-     * @param container Kontener dla fragmentu.
-     * @param savedInstanceState Stan zapisany.
-     * @return Widok fragmentu koszyka.
-     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = FragmentCartBinding.inflate(inflater, container, false);
+        binding = FragmentCartBinding.inflate(inflater,container,false);
         View root = binding.getRoot();
         initWidgets();
         db = FirebaseFirestore.getInstance();
@@ -143,16 +102,11 @@ public class CartFragment extends Fragment {
         initCartRV();
         return root;
     }
-
-    /**
-     * Inicjalizacja widżetów.
-     */
-    public void initWidgets() {
+    public void initWidgets(){
         cartItemsRV = binding.cartItemsRV;
         emptyCartMessage = binding.emptyCartMessage;
         cartTotalAmmount = binding.cartTotalAmmount;
         cartCheckoutBtn = binding.cartCheckoutBtn;
-
         cartCheckoutBtn.setOnClickListener(v -> {
             if (auth.getCurrentUser() == null) {
                 Toast.makeText(getContext(), "Please log in to checkout.", Toast.LENGTH_SHORT).show();
@@ -162,40 +116,36 @@ public class CartFragment extends Fragment {
                 Toast.makeText(getContext(), "Your cart is empty!", Toast.LENGTH_SHORT).show();
                 return;
             }
+            // Trigger PDF creation intent
             String fileName = "ShopUz_Invoice_" + new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date()) + ".pdf";
             createPdfDocumentLauncher.launch(fileName);
         });
     }
-
-    /**
-     * Inicjalizacja RecyclerView dla koszyka.
-     */
-    public void initCartRV() {
+    public void initCartRV(){
         cartItemsRV.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new CartItemsCustomAdapter();
         cartItemsRV.setAdapter(adapter);
     }
-
-    /**
-     * Wywoływane przy rozpoczęciu fragmentu.
-     */
     @Override
     public void onStart() {
         super.onStart();
         if (auth.getCurrentUser() != null) {
             startListeningForCartItems(auth.getCurrentUser().getUid());
         } else {
+            // User not logged in, show empty cart message or prompt login
+//            progressBar.setVisibility(View.GONE);
             emptyCartMessage.setVisibility(View.VISIBLE);
             emptyCartMessage.setText(getString(R.string.cartIsEmptyMessage));
+//            cartAdapter.setCartListings(new ArrayList<>()); // Clear any existing items
         }
+
+
     }
 
-    /**
-     * Wywoływane przy zatrzymaniu fragmentu.
-     */
     @Override
     public void onStop() {
         super.onStop();
+        // Remove all listeners to prevent memory leaks
         if (cartItemsListener != null) {
             cartItemsListener.remove();
         }
@@ -204,13 +154,11 @@ public class CartFragment extends Fragment {
         }
         listingListeners.clear();
     }
-
-    /**
-     * Rozpoczyna nasłuch zmian w koszyku użytkownika.
-     * @param userId Identyfikator użytkownika.
-     */
     private void startListeningForCartItems(String userId) {
+//        progressBar.setVisibility(View.VISIBLE);
         emptyCartMessage.setVisibility(View.GONE);
+
+        // Remove previous listing listeners before starting new ones
         for (ListenerRegistration listener : listingListeners) {
             listener.remove();
         }
@@ -222,6 +170,7 @@ public class CartFragment extends Fragment {
                 .addSnapshotListener((cartSnapshots, e) -> {
                     if (e != null) {
                         Log.w("CartFragment", "Listen failed for cart items.", e);
+//                        progressBar.setVisibility(View.GONE);
                         emptyCartMessage.setVisibility(View.VISIBLE);
                         emptyCartMessage.setText("Error loading cart.");
                         return;
@@ -229,35 +178,34 @@ public class CartFragment extends Fragment {
 
                     if (cartSnapshots == null || cartSnapshots.isEmpty()) {
                         Log.d("CartFragment", "Cart is empty.");
+//                        progressBar.setVisibility(View.GONE);
                         emptyCartMessage.setVisibility(View.VISIBLE);
                         emptyCartMessage.setText(getString(R.string.cartIsEmptyMessage));
-                        adapter.setCartItems(new ArrayList<>());
-                        totalAmmountValue = 0.0;
-                        cartTotalAmmount.setText(String.valueOf(totalAmmountValue));
-                        cartCheckoutBtn.setEnabled(false);
+                        adapter.setCartItems(new ArrayList<>()); // Clear adapter
+                        totalAmmountValue = 0.0; // Reset total amount
+                        cartTotalAmmount.setText(String.valueOf(totalAmmountValue)); // Update UI
+                        cartCheckoutBtn.setEnabled(false); // Disable checkout button
                         return;
                     }
 
+                    // Cart has items, now fetch their details from the 'listings' collection
                     List<String> listingIdsInCart = new ArrayList<>();
                     for (QueryDocumentSnapshot doc : cartSnapshots) {
-                        listingIdsInCart.add(doc.getId());
+                        listingIdsInCart.add(doc.getId()); // Get the listing ID
                     }
 
                     fetchListingDetails(listingIdsInCart);
                 });
     }
 
-    /**
-     * Pobiera szczegóły ofert znajdujących się w koszyku.
-     * @param listingIds Lista identyfikatorów ofert.
-     */
     private void fetchListingDetails(List<String> listingIds) {
         totalAmmountValue = 0.0;
         List<Listing> fetchedListings = new ArrayList<>();
-        final int[] fetchedCount = {0};
+        final int[] fetchedCount = {0}; // To track how many listings have been fetched
 
         if (listingIds.isEmpty()) {
             adapter.setCartItems(new ArrayList<>());
+//            progressBar.setVisibility(View.GONE);
             emptyCartMessage.setVisibility(View.VISIBLE);
             emptyCartMessage.setText(getString(R.string.cartIsEmptyMessage));
             return;
@@ -269,7 +217,9 @@ public class CartFragment extends Fragment {
                     .addSnapshotListener((listingSnapshot, e) -> {
                         if (e != null) {
                             Log.w("CartFragment", "Listen failed for listing " + listingId, e);
+                            // Handle error for individual listing, maybe skip it
                             fetchedCount[0]++;
+                            checkAllListingsFetched(listingIds.size(), fetchedCount[0], fetchedListings);
                             return;
                         }
 
@@ -277,27 +227,39 @@ public class CartFragment extends Fragment {
                             Listing listing = listingSnapshot.toObject(Listing.class);
                             listing.setId(listingId);
                             totalAmmountValue += listing.getPrice();
-                            fetchedListings.add(listing);
+                            if (listing != null) {
+                                // Check if this listing is already in the list to avoid duplicates on updates
+                                boolean found = false;
+                                for (int i = 0; i < fetchedListings.size(); i++) {
+                                    if (fetchedListings.get(i).getId().equals(listing.getId())) {
+                                        fetchedListings.set(i, listing); // Update existing
+                                        found = true;
+                                        break;
+                                    }
+                                }
+                                if (!found) {
+                                    fetchedListings.add(listing); // Add new
+                                }
+                            }
                         } else {
+                            Log.d("CartFragment", "Listing " + listingId + " does not exist or was removed.");
+                            // Handle case where listing might have been deleted from main collection
+                            // You might want to remove it from fetchedListings if it was there
                             fetchedListings.removeIf(l -> l.getId().equals(listingId));
                         }
                         fetchedCount[0]++;
+                        checkAllListingsFetched(listingIds.size(), fetchedCount[0], fetchedListings);
                     });
-            listingListeners.add(listener);
+            listingListeners.add(listener); // Keep track of individual listing listeners
+
         }
+
     }
 
-    /**
-     * Sprawdza, czy wszystkie oferty w koszyku zostały pobrane i aktualizuje interfejs użytkownika.
-     * @param totalExpected Całkowita liczba oczekiwanych ofert.
-     * @param currentFetched Liczba obecnie pobranych ofert.
-     * @param currentListings Lista aktualnych ofert w koszyku.
-     */
     private void checkAllListingsFetched(int totalExpected, int currentFetched, List<Listing> currentListings) {
         adapter.setCartItems(currentListings);
         cartTotalAmmount.setText(String.valueOf(totalAmmountValue));
-
-        // Aktualizacja widoczności pustego koszyka
+//        progressBar.setVisibility(View.GONE);
         if (currentListings.isEmpty() && currentFetched == totalExpected) {
             emptyCartMessage.setVisibility(View.VISIBLE);
             emptyCartMessage.setText("Your cart is empty.");
@@ -307,19 +269,13 @@ public class CartFragment extends Fragment {
             cartCheckoutBtn.setEnabled(true);
         }
     }
-
-    /**
-     * Generuje plik PDF z fakturą na podstawie koszyka zakupowego.
-     * @param uri Lokalizacja zapisu pliku PDF.
-     */
     private void generatePdf(Uri uri) {
         List<Listing> currentCartListings = new ArrayList<>();
-        if (!adapter.getCartItems().isEmpty()) {
+        if(!adapter.getCartItems().isEmpty()){
             currentCartListings = adapter.getCartItems();
         }
-
         PdfDocument document = new PdfDocument();
-        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(595, 842, 1).create(); // Rozmiar A4
+        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(595, 842, 1).create(); // A4 size
         PdfDocument.Page page = document.startPage(pageInfo);
 
         Canvas canvas = page.getCanvas();
@@ -327,16 +283,16 @@ public class CartFragment extends Fragment {
         paint.setColor(Color.BLACK);
         paint.setTextSize(24);
 
-        int y = 50; // Początkowa pozycja Y
+        int y = 50; // Starting Y position
 
-        // Nagłówek faktury
+        // Header
         canvas.drawText("ShopUz - Checkout Invoice", 50, y, paint);
         y += 30;
         paint.setTextSize(12);
         canvas.drawText("Date: " + new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(new Date()), 50, y, paint);
         y += 40;
 
-        // Elementy koszyka
+        // Listing items
         paint.setTextSize(16);
         canvas.drawText("Items:", 50, y, paint);
         y += 20;
@@ -346,13 +302,11 @@ public class CartFragment extends Fragment {
             String itemText = String.format(Locale.getDefault(), "%s - $%.2f", listing.getTitle(), listing.getPrice());
             canvas.drawText(itemText, 70, y, paint);
             y += 20;
-
-            // Tworzenie nowej strony, jeśli potrzeba więcej miejsca
-            if (y > pageInfo.getPageHeight() - 50) {
+            if (y > pageInfo.getPageHeight() - 50) { // Check if new page is needed
                 document.finishPage(page);
                 page = document.startPage(new PdfDocument.PageInfo.Builder(595, 842, document.getPages().size() + 1).create());
                 canvas = page.getCanvas();
-                y = 50;
+                y = 50; // Reset Y for new page
                 paint.setColor(Color.BLACK);
                 paint.setTextSize(16);
             }
@@ -372,7 +326,8 @@ public class CartFragment extends Fragment {
             Toast.makeText(getContext(), "Invoice saved to PDF!", Toast.LENGTH_LONG).show();
             Log.d("PDF", "PDF generated successfully at: " + uri.getPath());
 
-            // Czyszczenie koszyka po wygenerowaniu faktury
+            // Clear the cart after successful PDF generation
+            Log.d("value",String.valueOf(totalAmmountValue));
             clearUserCart();
 
         } catch (IOException e) {
@@ -380,67 +335,59 @@ public class CartFragment extends Fragment {
             Toast.makeText(getContext(), "Error generating PDF: " + e.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
-
-    /**
-     * Usuwa wszystkie oferty z koszyka użytkownika i aktualizuje dane w Firestore.
-     */
     private void clearUserCart() {
         String userId = auth.getCurrentUser().getUid();
+        Log.d("value",String.valueOf(totalAmmountValue));
         double tmpTotal = totalAmmountValue;
-
         db.collection("users")
                 .document(userId)
                 .collection("cart")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                        String listingId = doc.getId();
 
-                        // Usuwanie z koszyka użytkownika
+                    Log.d("value",String.valueOf(totalAmmountValue));
+                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                        String listingId = doc.getId(); // Get the listing ID from the cart document
+                        // 1. Delete from user's cart
                         doc.getReference().delete()
                                 .addOnSuccessListener(aVoid -> Log.d("Cart", "Item " + listingId + " removed from cart."))
                                 .addOnFailureListener(e -> Log.e("Cart", "Error removing item " + listingId + " from cart: " + e.getMessage()));
 
-                        // Usuwanie z kolekcji ofert
+                        // 2. Delete from 'listings' collection
                         db.collection("listings").document(listingId)
                                 .delete()
                                 .addOnSuccessListener(aVoid -> Log.d("Listings", "Listing " + listingId + " removed from listings collection."))
                                 .addOnFailureListener(e -> Log.e("Listings", "Error removing listing " + listingId + " from listings collection: " + e.getMessage()));
                     }
-
                     Log.d("Cart", "User cart cleared and corresponding listings deleted.");
                     showOrderConfirmationNotification(tmpTotal);
                 })
-                .addOnFailureListener(e -> Log.e("Cart", "Error clearing user cart: " + e.getMessage()));
+                .addOnFailureListener(e -> {
+                    Log.e("Cart", "Error clearing user cart: " + e.getMessage());
+                });
     }
-
-    /**
-     * Wyświetla powiadomienie o potwierdzeniu zamówienia po zakończeniu procesu zakupowego.
-     * @param total Całkowita kwota zamówienia.
-     */
     private void showOrderConfirmationNotification(double total) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(requireContext(), CHANNEL_ID)
-                .setSmallIcon(R.drawable.baseline_shopping_cart_24) // Ikona powiadomienia
+                .setSmallIcon(R.drawable.baseline_shopping_cart_24) // Use your app's notification icon
                 .setContentTitle("Order Confirmation")
                 .setContentText(String.format(Locale.getDefault(), "Thank you for your order! Total: $%.2f", total))
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                .setAutoCancel(true);
+                .setPriority(NotificationCompat.PRIORITY_HIGH) // Set high priority for heads-up
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE) // Or another relevant category
+                .setAutoCancel(true); // Dismiss the notification when the user taps on it
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(requireContext());
-
-        // Sprawdzanie pozwolenia na wysyłanie powiadomień w Androidzie 13+
+        // Check for POST_NOTIFICATIONS permission if running on Android 13 or higher
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
                 notificationManager.notify(NOTIFICATION_ID, builder.build());
             } else {
                 Log.d("Notification", "POST_NOTIFICATIONS permission not granted.");
+                // Optionally, request the permission here if you haven't already
             }
         } else {
             notificationManager.notify(NOTIFICATION_ID, builder.build());
         }
     }
-
 
 
 

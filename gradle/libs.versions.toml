@@ -23,11 +23,8 @@ googleid = "1.1.1"
 firebaseFirestore = "25.1.3"
 kotlin = "2.1.21"
 coreKtx = "1.16.0"
-robolectric = "4.10.3"
-coreKtxVersion = "1.6.1"
 
 [libraries]
-robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 android-plugin-annotation-v9 = { module = "org.maplibre.gl:android-plugin-annotation-v9", version.ref = "androidPluginAnnotationV9" }
 android-sdk = { module = "org.maplibre.gl:android-sdk", version.ref = "androidSdk" }
 firebase-ui-firestore = { module = "com.firebaseui:firebase-ui-firestore", version.ref = "firebaseUiFirestore" }
@@ -49,7 +46,6 @@ credentials-play-services-auth = { group = "androidx.credentials", name = "crede
 googleid = { group = "com.google.android.libraries.identity.googleid", name = "googleid", version.ref = "googleid" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-test-core-ktx = { group = "androidx.test", name = "core-ktx", version.ref = "coreKtxVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

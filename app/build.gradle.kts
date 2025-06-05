@@ -59,9 +59,7 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.activity)
     implementation(libs.core.ktx)
-    implementation(libs.test.core.ktx)
     testImplementation(libs.junit)
-    testImplementation(libs.robolectric)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 
