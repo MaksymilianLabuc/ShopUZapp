@@ -47,7 +47,7 @@ public class SettingsFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment using binding
+
         binding = FragmentSettingsBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
@@ -56,28 +56,28 @@ public class SettingsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Access the switch using binding
+
         binding.themeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                // Save the theme state
+
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.putBoolean(THEME_KEY, isChecked);
                 editor.apply();
 
-                // Apply the selected theme
+
                 setAppTheme(isChecked);
             }
         });
 
-        // Load the saved theme state
+
         boolean isDarkMode = sharedPreferences.getBoolean(THEME_KEY, false);
         binding.themeSwitch.setChecked(isDarkMode);
         setAppTheme(isDarkMode);
 
 
-        // Load the saved language state to correctly set the radio button
-        // No need to call setAppLanguage here again, as attachBaseContext handles it on activity creation.
+
+
 
 
     }
@@ -86,7 +86,7 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null; // Important to prevent memory leaks
+        binding = null;
     }
 
     private void setAppTheme(boolean isDarkMode) {

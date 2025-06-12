@@ -101,8 +101,8 @@ public class AddListingActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 validateListing();
-//                submitListing();
-//                submitListingToFirestore();
+
+
                 finish();
             }
         });
@@ -121,24 +121,24 @@ public class AddListingActivity extends AppCompatActivity {
             }
         });
     }
-//    private Uri createImageUri() {
-//        String filename = "IMG_" + new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date()) + ".jpg";
-//        ContentValues values = new ContentValues();
-//        values.put(MediaStore.Images.Media.DISPLAY_NAME, filename);
-//        values.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
-//        return getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-//    }
+
+
+
+
+
+
+
     private Uri createImageUri() throws IOException {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getFilesDir(); // Get app-specific storage directory
+        File storageDir = getFilesDir();
         File image = File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",         /* suffix */
                 storageDir      /* directory */
         );
 
-        // Use FileProvider to get a content URI
+
         return FileProvider.getUriForFile(this, "com.example.shopuzapp.fileprovider", image);
     }
     private void submitListing(){
@@ -184,7 +184,7 @@ public class AddListingActivity extends AppCompatActivity {
 
         if (scaledBitmap != null) {
             ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 80, byteArrayOutputStream); // Adjust quality if needed
+            scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 80, byteArrayOutputStream);
             byte[] byteArray = byteArrayOutputStream.toByteArray();
             imageBlob = Base64.encodeToString(byteArray, Base64.DEFAULT);
         } else {
@@ -205,7 +205,7 @@ public class AddListingActivity extends AppCompatActivity {
                     listingLocationET.setEnabled(true);
 
                     if (result != null) {
-                        location = result; // Store the geocoded location
+                        location = result;
                     } else {
                         Toast.makeText(AddListingActivity.this, "No location found for: " + listingLocationET.getText().toString(), Toast.LENGTH_LONG).show();
                         location = null;
@@ -217,7 +217,7 @@ public class AddListingActivity extends AppCompatActivity {
 
             @Override
             public void onError(String message) {
-//                listingProgressBar.setVisibility(View.GONE);
+
                 Log.d("geo","blad geocoding: "+message);
             }
         });
@@ -233,9 +233,9 @@ public class AddListingActivity extends AppCompatActivity {
             return;
         }
 
-//        Map<String, Object> newListing = new HashMap<>();
-//        newListing.put("title", title);
-//        newListing.put("description", description);
+
+
+
         Listing newListing = new Listing();
         newListing.setTitle(title);
         newListing.setDescription(description);
@@ -243,7 +243,7 @@ public class AddListingActivity extends AppCompatActivity {
         newListing.setOwnerId(auth.getUid());
         newListing.setLocation(location);
         if (imageBlob != null) {
-//            newListing.put("imageBlob", imageBlob);
+
             newListing.setImageBlob(imageBlob);
         }
 

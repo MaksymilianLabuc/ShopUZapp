@@ -145,7 +145,7 @@ public class CartFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
-        // Remove all listeners to prevent memory leaks
+
         if (cartItemsListener != null) {
             cartItemsListener.remove();
         }
@@ -155,10 +155,10 @@ public class CartFragment extends Fragment {
         listingListeners.clear();
     }
     private void startListeningForCartItems(String userId) {
-//        progressBar.setVisibility(View.VISIBLE);
+
         emptyCartMessage.setVisibility(View.GONE);
 
-        // Remove previous listing listeners before starting new ones
+
         for (ListenerRegistration listener : listingListeners) {
             listener.remove();
         }
@@ -170,7 +170,7 @@ public class CartFragment extends Fragment {
                 .addSnapshotListener((cartSnapshots, e) -> {
                     if (e != null) {
                         Log.w("CartFragment", "Listen failed for cart items.", e);
-//                        progressBar.setVisibility(View.GONE);
+
                         emptyCartMessage.setVisibility(View.VISIBLE);
                         emptyCartMessage.setText("Error loading cart.");
                         return;
@@ -178,20 +178,20 @@ public class CartFragment extends Fragment {
 
                     if (cartSnapshots == null || cartSnapshots.isEmpty()) {
                         Log.d("CartFragment", "Cart is empty.");
-//                        progressBar.setVisibility(View.GONE);
+
                         emptyCartMessage.setVisibility(View.VISIBLE);
                         emptyCartMessage.setText(getString(R.string.cartIsEmptyMessage));
-                        adapter.setCartItems(new ArrayList<>()); // Clear adapter
-                        totalAmmountValue = 0.0; // Reset total amount
-                        cartTotalAmmount.setText(String.valueOf(totalAmmountValue)); // Update UI
-                        cartCheckoutBtn.setEnabled(false); // Disable checkout button
+                        adapter.setCartItems(new ArrayList<>());
+                        totalAmmountValue = 0.0;
+                        cartTotalAmmount.setText(String.valueOf(totalAmmountValue));
+                        cartCheckoutBtn.setEnabled(false);
                         return;
                     }
 
-                    // Cart has items, now fetch their details from the 'listings' collection
+
                     List<String> listingIdsInCart = new ArrayList<>();
                     for (QueryDocumentSnapshot doc : cartSnapshots) {
-                        listingIdsInCart.add(doc.getId()); // Get the listing ID
+                        listingIdsInCart.add(doc.getId());
                     }
 
                     fetchListingDetails(listingIdsInCart);
@@ -201,11 +201,11 @@ public class CartFragment extends Fragment {
     private void fetchListingDetails(List<String> listingIds) {
         totalAmmountValue = 0.0;
         List<Listing> fetchedListings = new ArrayList<>();
-        final int[] fetchedCount = {0}; // To track how many listings have been fetched
+        final int[] fetchedCount = {0};
 
         if (listingIds.isEmpty()) {
             adapter.setCartItems(new ArrayList<>());
-//            progressBar.setVisibility(View.GONE);
+
             emptyCartMessage.setVisibility(View.VISIBLE);
             emptyCartMessage.setText(getString(R.string.cartIsEmptyMessage));
             return;
@@ -217,7 +217,7 @@ public class CartFragment extends Fragment {
                     .addSnapshotListener((listingSnapshot, e) -> {
                         if (e != null) {
                             Log.w("CartFragment", "Listen failed for listing " + listingId, e);
-                            // Handle error for individual listing, maybe skip it
+
                             fetchedCount[0]++;
                             checkAllListingsFetched(listingIds.size(), fetchedCount[0], fetchedListings);
                             return;
@@ -228,29 +228,29 @@ public class CartFragment extends Fragment {
                             listing.setId(listingId);
                             totalAmmountValue += listing.getPrice();
                             if (listing != null) {
-                                // Check if this listing is already in the list to avoid duplicates on updates
+
                                 boolean found = false;
                                 for (int i = 0; i < fetchedListings.size(); i++) {
                                     if (fetchedListings.get(i).getId().equals(listing.getId())) {
-                                        fetchedListings.set(i, listing); // Update existing
+                                        fetchedListings.set(i, listing);
                                         found = true;
                                         break;
                                     }
                                 }
                                 if (!found) {
-                                    fetchedListings.add(listing); // Add new
+                                    fetchedListings.add(listing);
                                 }
                             }
                         } else {
                             Log.d("CartFragment", "Listing " + listingId + " does not exist or was removed.");
-                            // Handle case where listing might have been deleted from main collection
-                            // You might want to remove it from fetchedListings if it was there
+
+
                             fetchedListings.removeIf(l -> l.getId().equals(listingId));
                         }
                         fetchedCount[0]++;
                         checkAllListingsFetched(listingIds.size(), fetchedCount[0], fetchedListings);
                     });
-            listingListeners.add(listener); // Keep track of individual listing listeners
+            listingListeners.add(listener);
 
         }
 
@@ -259,7 +259,7 @@ public class CartFragment extends Fragment {
     private void checkAllListingsFetched(int totalExpected, int currentFetched, List<Listing> currentListings) {
         adapter.setCartItems(currentListings);
         cartTotalAmmount.setText(String.valueOf(totalAmmountValue));
-//        progressBar.setVisibility(View.GONE);
+
         if (currentListings.isEmpty() && currentFetched == totalExpected) {
             emptyCartMessage.setVisibility(View.VISIBLE);
             emptyCartMessage.setText("Your cart is empty.");
@@ -275,7 +275,7 @@ public class CartFragment extends Fragment {
             currentCartListings = adapter.getCartItems();
         }
         PdfDocument document = new PdfDocument();
-        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(595, 842, 1).create(); // A4 size
+        PdfDocument.PageInfo pageInfo = new PdfDocument.PageInfo.Builder(595, 842, 1).create();
         PdfDocument.Page page = document.startPage(pageInfo);
 
         Canvas canvas = page.getCanvas();
@@ -283,16 +283,16 @@ public class CartFragment extends Fragment {
         paint.setColor(Color.BLACK);
         paint.setTextSize(24);
 
-        int y = 50; // Starting Y position
+        int y = 50;
 
-        // Header
+
         canvas.drawText("ShopUz - Checkout Invoice", 50, y, paint);
         y += 30;
         paint.setTextSize(12);
         canvas.drawText("Date: " + new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault()).format(new Date()), 50, y, paint);
         y += 40;
 
-        // Listing items
+
         paint.setTextSize(16);
         canvas.drawText("Items:", 50, y, paint);
         y += 20;
@@ -302,11 +302,11 @@ public class CartFragment extends Fragment {
             String itemText = String.format(Locale.getDefault(), "%s - $%.2f", listing.getTitle(), listing.getPrice());
             canvas.drawText(itemText, 70, y, paint);
             y += 20;
-            if (y > pageInfo.getPageHeight() - 50) { // Check if new page is needed
+            if (y > pageInfo.getPageHeight() - 50) {
                 document.finishPage(page);
                 page = document.startPage(new PdfDocument.PageInfo.Builder(595, 842, document.getPages().size() + 1).create());
                 canvas = page.getCanvas();
-                y = 50; // Reset Y for new page
+                y = 50;
                 paint.setColor(Color.BLACK);
                 paint.setTextSize(16);
             }
@@ -326,7 +326,7 @@ public class CartFragment extends Fragment {
             Toast.makeText(getContext(), "Invoice saved to PDF!", Toast.LENGTH_LONG).show();
             Log.d("PDF", "PDF generated successfully at: " + uri.getPath());
 
-            // Clear the cart after successful PDF generation
+
             Log.d("value",String.valueOf(totalAmmountValue));
             clearUserCart();
 
@@ -347,13 +347,13 @@ public class CartFragment extends Fragment {
 
                     Log.d("value",String.valueOf(totalAmmountValue));
                     for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
-                        String listingId = doc.getId(); // Get the listing ID from the cart document
-                        // 1. Delete from user's cart
+                        String listingId = doc.getId();
+
                         doc.getReference().delete()
                                 .addOnSuccessListener(aVoid -> Log.d("Cart", "Item " + listingId + " removed from cart."))
                                 .addOnFailureListener(e -> Log.e("Cart", "Error removing item " + listingId + " from cart: " + e.getMessage()));
 
-                        // 2. Delete from 'listings' collection
+
                         db.collection("listings").document(listingId)
                                 .delete()
                                 .addOnSuccessListener(aVoid -> Log.d("Listings", "Listing " + listingId + " removed from listings collection."))
@@ -368,21 +368,21 @@ public class CartFragment extends Fragment {
     }
     private void showOrderConfirmationNotification(double total) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(requireContext(), CHANNEL_ID)
-                .setSmallIcon(R.drawable.baseline_shopping_cart_24) // Use your app's notification icon
+                .setSmallIcon(R.drawable.baseline_shopping_cart_24)
                 .setContentTitle("Order Confirmation")
                 .setContentText(String.format(Locale.getDefault(), "Thank you for your order! Total: $%.2f", total))
-                .setPriority(NotificationCompat.PRIORITY_HIGH) // Set high priority for heads-up
-                .setCategory(NotificationCompat.CATEGORY_MESSAGE) // Or another relevant category
-                .setAutoCancel(true); // Dismiss the notification when the user taps on it
+                .setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .setAutoCancel(true);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(requireContext());
-        // Check for POST_NOTIFICATIONS permission if running on Android 13 or higher
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
                 notificationManager.notify(NOTIFICATION_ID, builder.build());
             } else {
                 Log.d("Notification", "POST_NOTIFICATIONS permission not granted.");
-                // Optionally, request the permission here if you haven't already
+
             }
         } else {
             notificationManager.notify(NOTIFICATION_ID, builder.build());

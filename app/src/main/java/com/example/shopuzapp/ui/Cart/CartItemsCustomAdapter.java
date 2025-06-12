@@ -54,10 +54,10 @@ public class CartItemsCustomAdapter extends RecyclerView.Adapter<CartItemsCustom
                 holder.cartItemPreviewImage.setImageBitmap(decodedBitmap);
             } catch (IllegalArgumentException e) {
                 Log.e("CartAdapter", "Error decoding image: " + e.getMessage());
-                holder.cartItemPreviewImage.setImageResource(R.drawable.ic_launcher_foreground); // Fallback
+                holder.cartItemPreviewImage.setImageResource(R.drawable.ic_launcher_foreground);
             }
         } else {
-            holder.cartItemPreviewImage.setImageResource(R.drawable.ic_launcher_foreground); // Fallback
+            holder.cartItemPreviewImage.setImageResource(R.drawable.ic_launcher_foreground);
         }
         holder.cartItemRemoveFromCartBtn.setOnClickListener(new View.OnClickListener() {
             @Override

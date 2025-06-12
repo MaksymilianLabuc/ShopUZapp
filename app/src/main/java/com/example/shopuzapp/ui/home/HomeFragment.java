@@ -80,7 +80,7 @@ public class HomeFragment extends Fragment {
         addListingFAB = binding.AddListingFAB;
         goToCartFAB = binding.goToCartFAB;
         sortFiltertFAB = binding.sortFiltertFAB;
-        //testPictureListing = binding.testPictureListing;
+
         listingsRV = binding.listingsRV;
         addListingFAB.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,7 +109,7 @@ public class HomeFragment extends Fragment {
     public void initRV(){
         Query query = db.collection("listings");
 
-        // Apply Filtering
+
         if (currentMinPrice != null) {
             query = query.whereGreaterThanOrEqualTo("price", currentMinPrice);
         }
@@ -117,7 +117,7 @@ public class HomeFragment extends Fragment {
             query = query.whereLessThanOrEqualTo("price", currentMaxPrice);
         }
 
-        // Apply Sorting
+
         switch (currentSortOption) {
             case "Price: Low to High":
                 query = query.orderBy("price", Query.Direction.ASCENDING);
@@ -133,8 +133,8 @@ public class HomeFragment extends Fragment {
                 break;
             case "Default (No Sort)":
             default:
-                // No specific order, Firestore will return by document ID by default or whatever internal order it has
-                // If you want a consistent default, you might add orderBy(FieldPath.documentId())
+
+
                 break;
         }
 
@@ -148,8 +148,8 @@ public class HomeFragment extends Fragment {
             listingsRV.setItemAnimator(null);
             listingsRV.setAdapter(adapter);
         } else{
-            adapter.updateOptions(options); // Update the adapter with new query options
-            adapter.notifyDataSetChanged(); // Notify data set changed
+            adapter.updateOptions(options);
+            adapter.notifyDataSetChanged();
         }
     }
     private void showSortFilterPopup() {
@@ -161,7 +161,7 @@ public class HomeFragment extends Fragment {
         final EditText etMinPrice = viewInflated.findViewById(R.id.etMinPrice);
         final EditText etMaxPrice = viewInflated.findViewById(R.id.etMaxPrice);
 
-        // Set up the spinner
+
         ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(
                 getContext(),
                 R.array.sort_options,
@@ -170,7 +170,7 @@ public class HomeFragment extends Fragment {
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerSortOptions.setAdapter(spinnerAdapter);
 
-        // Set initial selections/values based on current state
+
         int selectionPosition = spinnerAdapter.getPosition(currentSortOption);
         spinnerSortOptions.setSelection(selectionPosition);
         if (currentMinPrice != null) {
@@ -182,12 +182,12 @@ public class HomeFragment extends Fragment {
 
         builder.setView(viewInflated);
 
-        // Set up the buttons
+
         builder.setPositiveButton("Apply", (dialog, which) -> {
-            // Get selected sort option
+
             currentSortOption = spinnerSortOptions.getSelectedItem().toString();
 
-            // Get filter prices
+
             try {
                 String minPriceStr = etMinPrice.getText().toString();
                 currentMinPrice = minPriceStr.isEmpty() ? null : Double.parseDouble(minPriceStr);
@@ -204,13 +204,13 @@ public class HomeFragment extends Fragment {
                 Toast.makeText(getContext(), "Invalid Max Price", Toast.LENGTH_SHORT).show();
             }
 
-            // Validate price range
+
             if (currentMinPrice != null && currentMaxPrice != null && currentMinPrice > currentMaxPrice) {
                 Toast.makeText(getContext(), "Min price cannot be greater than Max price", Toast.LENGTH_LONG).show();
-                return; // Don't apply filter
+                return;
             }
 
-            // Re-initialize RecyclerView with new query
+
             initRV();
         });
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
@@ -223,10 +223,10 @@ public class HomeFragment extends Fragment {
     public void onResume() {
         super.onResume();
         try{
-//            Listing listing = dh.getFristListing();
-//            Uri imageUri = Uri.parse(listing.getImageURI());
-//            testPictureListing.setImageURI(imageUri);
-            //fetchLatestListingFromFirestore();
+
+
+
+
         } catch(Exception e){
 
         }

@@ -111,16 +111,12 @@ public class ListingDetailFragment extends Fragment {
         listingDetailDescription = binding.listingDetailDescription;
         editListingButton = binding.editListingBtn;
         listingDetailMapView = binding.listingDetailMapView;
-//        mapController = new MapController(this.getContext(), listingDetailMapView);
-//        mapController.setupMap(51.93, 15.50);
         listingDetailMapView.getMapAsync(mapLibreMap -> mapLibreMap.setStyle("https://tiles.openfreemap.org/styles/bright", style -> {
             LatLng location;
             if(currentListing.getLocation() != null) location = new LatLng(Double.parseDouble(currentListing.location.get("lat")),Double.parseDouble(currentListing.location.get("lng")));
-//            else location = new LatLng(0,0);
             else {
                 location = new LatLng(0,0);
                 listingDetailMapView.setVisibility(View.GONE);
-//                return;
             }
             UiSettings uiSettings = mapLibreMap.getUiSettings();
             uiSettings.setScrollGesturesEnabled(false);
@@ -153,7 +149,6 @@ public class ListingDetailFragment extends Fragment {
                     .withIconImage(ICON_ID)
                     .withIconSize(0.5f)
                     .withIconAnchor("bottom")
-//                    .withSymbolSortKey(5.0f)
                     .withDraggable(false);
             symbolManager.create(symbolOptions);
         }));
@@ -180,15 +175,36 @@ public class ListingDetailFragment extends Fragment {
             try {
                 byte[] decodedBytes = Base64.decode(imageBlob, Base64.DEFAULT);
                 Bitmap decodedBitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
-//                holder.listingItemPreviewImage.setImageBitmap(decodedBitmap);
                 return decodedBitmap;
             } catch (IllegalArgumentException e) {
                 Log.e("ListingAdapter", "Error decoding image: " + e.getMessage());
-//                holder.listingItemPreviewImage.setImageResource(R.drawable.ic_launcher_foreground);
             }
         } else {
-//            holder.listingItemPreviewImage.setImageResource(R.drawable.ic_launcher_foreground);
         }
         return null;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        listingDetailMapView.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        listingDetailMapView.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        listingDetailMapView.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        listingDetailMapView.onDestroy();
     }
 }

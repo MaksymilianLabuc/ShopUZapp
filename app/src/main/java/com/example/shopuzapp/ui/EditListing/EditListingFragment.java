@@ -35,7 +35,7 @@ public class EditListingFragment extends Fragment {
     private NavController navController;
 
     public EditListingFragment() {
-        // Required empty public constructor
+
     }
 
     public static EditListingFragment newInstance() {
@@ -54,7 +54,7 @@ public class EditListingFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
+
         View view = inflater.inflate(R.layout.fragment_edit_listing, container, false);
         initViews(view);
         navController = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment_content_main);
@@ -63,7 +63,7 @@ public class EditListingFragment extends Fragment {
             loadListingDetails(listingId);
         } else {
             Toast.makeText(getContext(), "Error: Listing ID not found.", Toast.LENGTH_SHORT).show();
-            // Optionally navigate back or disable editing
+
         }
 
         editSaveListingButton.setOnClickListener(v -> saveEditedListing());
@@ -92,12 +92,12 @@ public class EditListingFragment extends Fragment {
                     if (image != null) {
                         editListingPhotoImageView.setImageBitmap(image);
                     } else {
-                        editListingPhotoImageView.setImageResource(R.drawable.ic_launcher_foreground); // Or a default image
+                        editListingPhotoImageView.setImageResource(R.drawable.ic_launcher_foreground);
                     }
                 }
             } else {
                 Toast.makeText(getContext(), "Listing not found.", Toast.LENGTH_SHORT).show();
-                // Optionally navigate back
+
             }
         }).addOnFailureListener(e -> {
             Log.e("EditListingFragment", "Error fetching listing: ", e);
@@ -140,9 +140,9 @@ public class EditListingFragment extends Fragment {
             return;
         }
 
-        // For now, we are not handling image updates in this simplified edit.
-        // If you need to update the image, you'll need to add image selection
-        // functionality and handle the new image blob here.
+
+
+
 
         DocumentReference listingRef = db.collection("listings").document(listingId);
         listingRef.update(
@@ -151,12 +151,12 @@ public class EditListingFragment extends Fragment {
                 "price", price
         ).addOnSuccessListener(aVoid -> {
             Toast.makeText(getContext(), "Listing updated successfully.", Toast.LENGTH_SHORT).show();
-            // Optionally navigate back to the detail view
+
             if (navController != null) {
                 Bundle bundle = new Bundle();
                 bundle.putString("listingId", listingId);
                 NavOptions navOptions = new NavOptions.Builder()
-                        .setPopUpTo(R.id.nav_home, true) // Pop up to the homeFragment (inclusive)
+                        .setPopUpTo(R.id.nav_home, true)
                         .build();
                 navController.navigate(R.id.nav_listing_detail, bundle, navOptions);
             }
